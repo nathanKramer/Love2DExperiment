@@ -106,3 +106,7 @@ end
 function camera:scalePoint(x, y)
 	return x * self.scaleX + self.x, y * self.scaleY + self.y
 end
+
+function camera:scalePointToCamera(x, y)
+	return x * self.scaleX - self.x, y * self.scaleY - self.y
+end

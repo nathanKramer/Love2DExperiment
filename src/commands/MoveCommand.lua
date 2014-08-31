@@ -1,4 +1,4 @@
-local class = require 'src.utils.middleclass'
+local class = require 'src.libs.middleclass'
 require 'src.commands.Command'
 require 'src.utils.geometry'
 vector = require 'src.utils.vector'
@@ -20,23 +20,57 @@ function MoveCommand:draw(unitX, unitY)
 	--lineStipple(self.x, self.y, unitX, unitY, 3, 3)
 
 	-- normal line
+	local mode = love.graphics.getBlendMode()
+	love.graphics.setColor({112, 112, 112, 128})
+	love.graphics.setBlendMode("additive")
 	love.graphics.line(self.x, self.y, unitX, unitY)
+	love.graphics.setBlendMode(mode)
 end
 
+-- New Code.. HMMMM
+-- Perhaps we won't do it this way. Accurate move command is best move command?
+-- function MoveCommand:doCommand(baseUnit)
+-- 	local destPoint = vector(self.x, self.y)
+-- 	local objPoint = vector(baseUnit:getX(), baseUnit:getY())
+-- 	local distance = objPoint:dist(destPoint)
+
+-- 	if distance < 1.0 then
+-- 		baseUnit:setTargetSpeed(0)
+-- 		return true
+-- 	end
+
+
+-- 	local dv = destPoint - objPoint
+-- 	dv:normalize_inplace()
+
+-- 	local constant = (self.multiplier * baseUnit.moveSpeed)
+-- 	local distanceToMove = distance < constant and distance or constant
+
+-- 	baseUnit:setMoveDirection(dv)	
+-- 	baseUnit:setTargetSpeed(distanceToMove)
+-- 	print(distanceToMove)
+
+-- 	-- baseUnit.x = newPos.x
+-- 	-- baseUnit.y = newPos.y
+
+-- 	return false
+-- end
+
+--Old code
 function MoveCommand:doCommand(gameObj)
 	local destPoint = vector(self.x, self.y)
-	local objPoint = vector(gameObj.x, gameObj.y)
+	local objPoint = vector(gameObj:getX(), gameObj:getY())
 	local distance = objPoint:dist(destPoint)
 
 	local dv = destPoint - objPoint
 	dv:normalize_inplace()
 
-	local constant = (self.multiplier * 200)
+	local constant = (self.multiplier * gameObj.moveSpeed)
 	local distanceToMove = distance < constant and distance or constant
 	local newPos = objPoint + (distanceToMove * dv)
 
-	gameObj.x = newPos.x
-	gameObj.y = newPos.y
+	gameObj.origin.x = newPos.x
+	gameObj.origin.y = newPos.y
 
 	return newPos == destPoint
 end

@@ -1,4 +1,4 @@
-local class = require 'src.utils.middleclass'
+local class = require 'src.libs.middleclass'
 
 BoundingBox = class('BoundingBox')
 
@@ -19,6 +19,10 @@ function BoundingBox:pointWithinSquare(pointX, pointY)
 		end
 	end
 	return false
+end
+
+function BoundingBox:vertices()
+	return self.x1, self.y1, self.x2, self.y1, self.x2, self.y2, self.x1, self.y2
 end
 
 function BoundingBox:objectWithinSquare(rect)

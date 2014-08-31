@@ -1,25 +1,27 @@
-local class = require 'src.utils.middleclass'
+local class = require 'src.libs.middleclass'
 require 'src.utils.queue'
+require 'src.units.MoveableEntity'
 
-BaseUnit = class('BaseUnit')
+BaseUnit = class('BaseUnit', MoveableEntity)
 
 function BaseUnit:initialize(x, y, box)
-	self.x = x -- origin x
-	self.y = y -- origin y
-	self.boundingBox = box
+	MoveableEntity.initialize(
+		self,
+		x,
+		y,
+		box
+	)
 	self.commandQueue = Queue.new()
+	self.moveSpeed = 200 -- Default movement speed
 end
 
-function BaseUnit:refreshBoundingBox(dt)
-	self.boundingBox = BoundingBox:new(
-		self.x - (self.boundingBox.width / 2), 
-		self.y - (self.boundingBox.height / 2),
-		self.x + (self.boundingBox.width / 2),
-		self.y + (self.boundingBox.height / 2)
-	)
+function BaseUnit:setTargetMovespeed(newSpeed)
+	self.moveSpeed = newSpeed
 end
 
 function BaseUnit:update(dt)
+	MoveableEntity.update(self, dt)
+	
 	if Queue.empty( self.commandQueue ) then
 		return
 	end
@@ -29,21 +31,22 @@ function BaseUnit:update(dt)
 	if self.commandQueue[self.commandQueue.first]:doCommand(self) then
 		Queue.pop( self.commandQueue )
 	end
-
-	self:refreshBoundingBox(dt)
-
 end
 
-function BaseUnit:draw(x, y)
-	if Queue.empty( self.commandQueue ) then
+function BaseUnit:draw()
+	MoveableEntity.draw(self)
+
+	if Queue.empty( self.commandQueue ) or self.commandQueue.last == 0  then
 		return
 	end
-
 
 	local cmdQ = self.commandQueue[self.commandQueue.first]
 	love.graphics.setColor(0, 102, 204, 64)
 	love.graphics.setLineStyle('smooth')
 	love.graphics.setLineWidth(1)
+
+	local x = self:getX()
+	local y = self:getY()
 	while cmdQ do
 		cmdQ:draw(x, y)
 		if not (cmdQ.next == nil) then

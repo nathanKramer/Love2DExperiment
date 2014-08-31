@@ -1,4 +1,4 @@
-local class = require 'src.utils.middleclass'
+local class = require 'src.libs.middleclass'
 require 'src.units.square'
 require 'src.utils.BoundingBox'
 
@@ -111,7 +111,9 @@ function Hud:drawHudBorder()
 end
 
 function Hud:draw()
+	love.graphics.setBlendMode('alpha')
 	Hud:drawSelectionBox()
 	Hud:drawControlGroupView()
 	Hud:drawHudBorder()
+
 end

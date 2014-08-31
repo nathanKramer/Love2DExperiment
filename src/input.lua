@@ -1,6 +1,13 @@
 
 require 'src.utils/camera'
-Input = {}
+Input = {
+	__mouse1Pressed,
+	__mouse2Pressed,
+	__mouse1Released,
+	__mouse2Released,
+	__keysPressed = {},
+	__keysReleased = {}
+}
 
 -------------- Love callbacks
 function love.mousepressed(x, y, button)
@@ -11,6 +18,8 @@ function love.mousepressed(x, y, button)
 	elseif button == 'r' then
 	    Input.__mouse2Pressed = true
 	end
+
+	loveframes.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
@@ -21,9 +30,25 @@ function love.mousereleased(x, y, button)
 	elseif button == 'r' then
 		Input.__mouse2Released = true
 	end
+
+	loveframes.mousereleased(x, y, button)
 end
 
--------------- Functions to do stuff
+function love.keypressed( key, unicode )
+	print(key .. " pressed")
+	Input.__keysPressed[key] = true
+
+	loveframes.keypressed(key, unicode)
+end
+
+function love.keyreleased( key, unicode )
+	print(key .. " released")
+   	Input.__keysReleased[key] = true
+
+   	loveframes.keyreleased(key)
+end
+
+-------------- Functions to do stuff. These are called from controller and passed stuff
 function Input:mouse1Pressed(x, y)
 	Hud:startSelectionBox(x, y)
 	Game:checkForSelect(x, y)
@@ -48,5 +73,14 @@ function Input:mouse2Released(x, y)
 
 	Input.__mouse2Released = true
 end
+
+function Input:keypressHandled( key )
+	Input.__keysPressed[key] = false
+end
+
+function Input:keyreleaseHandled( key )
+   	Input.__keysReleased[key] = false
+end
+
 
 

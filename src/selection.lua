@@ -1,4 +1,4 @@
-local class = require 'src.utils.middleclass'
+local class = require 'src.libs.middleclass'
 
 Selection = class('Selection')
 
@@ -51,6 +51,7 @@ CGSelection = class('CGSelection', Selection)
 
 function CGSelection:initialize()
 	Selection.initialize(self)
+	self.lastControlGroup = -1 -- if the same control group is pressed more than once in quick succession, center on screen
 	self.controlGroups = {}
 end
 
@@ -71,10 +72,16 @@ end
 
 function Selection:recallControlGroup(ctrlGrp)
 	if not self.controlGroups[ctrlGrp] then
-		return
+		return false
+	end
+	if self.selected == self.controlGroups[ctrlGrp].selected then
+		Game:centerOnSelected()
 	end
 	self.selected = {}
+	self.lastControlGroup = ctrlGrp
 	for k, v in pairs(self.controlGroups[ctrlGrp].selected) do
 		self.selected[k] = v
 	end
+
+	return self.selected.size > 0
 end

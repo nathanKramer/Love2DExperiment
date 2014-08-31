@@ -10,6 +10,7 @@ function GameObjects:update(dt)
 end
 
 function GameObjects:draw()
+	love.graphics.setBlendMode('alpha')
 	for gameObj = 0, (self.size-1) do
 		self[gameObj]:draw()
 	end
