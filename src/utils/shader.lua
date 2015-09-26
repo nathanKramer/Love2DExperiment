@@ -51,36 +51,41 @@ function Shader:drawLights(shadowCasters, lights, worldWidth, worldHeight)
 	for k, light in pairs(lights) do
 		lg.setColorMask(false, false, false, false)
 		lg.setInvertedStencil(function()
-			for id, shadowCaster in pairs(shadowCasters) do
-				--local vertices = { block.b:getWorldPoints(block.s:getPoints()) }
-				local vertices = { shadowCaster:getPoints() }
+			for id = 0, shadowCasters.size-1 do
+				local shadowCaster = shadowCasters[id]
+				id = id + 1
 
-				for i = 1, #vertices, 2 do
-					if light.drawShadows then			
+				if shadowCaster:canCastShadows() then
+					--local vertices = { block.b:getWorldPoints(block.s:getPoints()) }
+					local vertices = { shadowCaster:getPoints() }
 
-						local cv = vector(vertices[i], vertices[i + 1])
-						local nv
-						if i + 2 > #vertices then
-							nv = vector(vertices[1], vertices[2])
-						else
-						    nv = vector(vertices[i + 2], vertices[i + 3])
-						end
+					for i = 1, #vertices, 2 do
+						if light.drawShadows then
 
-						local edge = nv - cv 
-						local lightToVertex = vector(cv.x - light:getX(), cv.y - light:getY())
-						local edgeNormal = vector(edge.y, -edge.x)
+							local cv = vector(vertices[i], vertices[i + 1])
+							local nv
+							if i + 2 > #vertices then
+								nv = vector(vertices[1], vertices[2])
+							else
+							    nv = vector(vertices[i + 2], vertices[i + 3])
+							end
 
-						if edgeNormal * lightToVertex > 0 then
+							local edge = nv - cv 
+							local lightToVertex = vector(cv.x - light:getX(), cv.y - light:getY())
+							local edgeNormal = vector(edge.y, -edge.x)
 
-							local shadow
+							if edgeNormal * lightToVertex > 0 then
 
-							shadow = lightToVertex
-							local p1 = cv + (shadow * 100)
+								local shadow
 
-							shadow = vector(nv.x - light:getX(), nv.y - light:getY())
-							local p2 = nv + (shadow * 100)
+								shadow = lightToVertex
+								local p1 = cv + (shadow * 100)
 
-							lg.polygon('fill', cv.x, cv.y, p1.x, p1.y, p2.x, p2.y, nv.x, nv.y)
+								shadow = vector(nv.x - light:getX(), nv.y - light:getY())
+								local p2 = nv + (shadow * 100)
+
+								lg.polygon('fill', cv.x, cv.y, p1.x, p1.y, p2.x, p2.y, nv.x, nv.y)
+							end
 						end
 					end
 				end

@@ -34,6 +34,11 @@ function Light:setDrawShadows(val)
 	self.drawShadows = val
 end
 
+-- does this object obstruct light? for fuck's sake, no
+function Light:canCastShadows()
+	return false
+end
+
 function Light:update(dt)
 	MoveableEntity.update(self, dt)
 end

@@ -1,0 +1,42 @@
+{
+	"levelName": "some name",
+	"background": "test.jpg",
+	"dimensions": {
+		"width": 4096,
+		"height": 4096
+	},
+	"entities": [{
+		"type": "wall",
+		"x": 300,
+		"y": 300,
+		"dimensions": {
+			"width": 200,
+			"height": 200
+		}
+	},
+	{
+		"type": "light",
+		"x": 450,
+		"y": 370,
+		"radius": 200,
+		"colour": {
+			"r": 0.8,
+			"g": 0.4,
+			"b": 0.6
+		}
+	},
+	{
+		"type": "player",
+		"x": 512,
+		"y": 350,
+		"dimensions": {
+			"width": 50,
+			"height": 50
+		},
+		"color": {
+			"r": 255,
+			"g": 128,
+			"b": 128
+		}
+	}]
+}

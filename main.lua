@@ -24,7 +24,7 @@ function love.load()
 	require('src.libs.LoveFrames')
 
 	love.mouse.setVisible(false)
-	love.graphics.setBackgroundColor(0, 15, 60, 255)
+	love.graphics.setBackgroundColor(0, 0, 0, 255)
 	love.graphics.setColor(0, 0, 0)
 	cursor = love.graphics.newImage("resources/cursor.png")
 	resources:init()

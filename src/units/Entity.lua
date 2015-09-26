@@ -26,6 +26,10 @@ function Entity:refreshBoundingBox(dt)
 	)
 end
 
+function Entity:canCastShadows()
+	return false
+end
+
 function Entity:getPoints()
 	return self.boundingBox:vertices()
 end

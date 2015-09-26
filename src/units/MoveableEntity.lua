@@ -29,6 +29,10 @@ function MoveableEntity:setMoveDirection(d)
 	self.moveDirection = d
 end
 
+function MoveableEntity:canCastShadows()
+	return true
+end
+
 function MoveableEntity:update(dt)
 
 	-- blackhole code

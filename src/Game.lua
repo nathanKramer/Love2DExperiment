@@ -6,9 +6,8 @@ Game.selection = CGSelection:new()
 
 function Game:init()
 	World:init()
-	Entities:init()
 	camera:setBounds(0, 0, World.width, World.height)
-	camera:lookAt(World.cameraStart.x, World.cameraStart.y)
+	camera:lookAt(Entities.Player:getX(), Entities.Player:getY())
 	Hud:init()
 end
 
@@ -16,7 +15,7 @@ function Game:update(dt)
 	World:update(dt)
 	GameController:update(dt)
 	Entities:update(dt)
-	Game:resolveCollisions(dt)
+	--Game:resolveCollisions(dt)
 	Hud:update(dt)
 end
 
@@ -40,7 +39,7 @@ end
 function Game:draw()
 	camera:set()
 
-	Shader:drawLights(Entities.GameObjects, Entities.Lights, World.width, World.height)
+	Shader:drawLights(Entities, Entities.Lights, World.width, World.height)
 	love.graphics.setInvertedStencil(function()
 		love.graphics.setColorMask(false, false, false, false)
 		Entities:draw()
@@ -68,23 +67,25 @@ end
 -- If we have, adds it to the set of selected objects
 --
 function Game:checkForSelect(pointX, pointY)
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 
-		if gameObj:tryToSelect(pointX, pointY) then
-			if not love.keyboard.isDown( "lshift" ) then
-				Game:deselectObjects()
+		if gameObj.tryToSelect ~= nil then
+			if gameObj:tryToSelect(pointX, pointY) then
+				if not love.keyboard.isDown( "lshift" ) then
+					Game:deselectObjects()
+				end
+				if love.keyboard.isDown( "lctrl" ) then
+					Game:selectAllOfType(gameObj.class)
+				end
+				Game.selection:add(id)
+				break
 			end
-			if love.keyboard.isDown( "lctrl" ) then
-				Game:selectAllOfType(gameObj.class)
-			end
-			Game.selection:add(id)
-			break
 		end
 	end
 end
 
 function Game:selectAllOfType(c)
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 		if gameObj:isInstanceOf(c) then
 			Game.selection:add(id)
 		end
@@ -111,14 +112,16 @@ function Game:checkForSelectInBox()
 
 	local selectionBox = Hud.selectionBox.rectangle
 	local initialDeselect = true
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 
-		if gameObj:tryToDragSelect(selectionBox) then
-			if not love.keyboard.isDown( "lshift" ) and initialDeselect then
-				Game:deselectObjects()
-				initialDeselect = false
+		if gameObj.tryToDragSelect ~= nil then
+			if gameObj:tryToDragSelect(selectionBox) then
+				if not love.keyboard.isDown( "lshift" ) and initialDeselect then
+					Game:deselectObjects()
+					initialDeselect = false
+				end
+				Game.selection:add(id)
 			end
-			Game.selection:add(id)
 		end
 	end
 
@@ -146,7 +149,7 @@ end
 
 function Game:clearCommandQueue()
 
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 		if Game.selection.selected[id] then
 			gameObj:clearCommandQueue()
 		end
@@ -155,7 +158,7 @@ end
 
 function Game:moveCommand(x, y)
 
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 		if Game.selection.selected[id] then
 			gameObj:addCommandToQueue(MoveCommand:new(x, y))
 		end
@@ -164,7 +167,7 @@ end
 
 function Game:stopCommand()
 
-	for id, gameObj in pairs(Entities.GameObjects) do
+	for id, gameObj in pairs(Entities.PlayerControlled) do
 		if Game.selection.selected[id] then
 			gameObj:addCommandToQueue(StopCommand:new())
 		end
